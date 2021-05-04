@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { SearchTaskDTO } from './dto/search-task.dto';
+import { TaskValidationPipe } from './pipes/task-status-validation.pipe';
 import { Task, TaskStatus } from './tasks.model';
 
 import { TasksService } from './tasks.service';
@@ -10,7 +11,7 @@ export class TasksController {
     constructor(private taskService: TasksService){}
 
     @Get()
-    getAllTasks(@Query() searchTaskDTO: SearchTaskDTO): Task[]{
+    getAllTasks(@Query(ValidationPipe) searchTaskDTO: SearchTaskDTO): Task[]{
         if (Object.keys(searchTaskDTO).length) {
             return this.taskService.searchForTasks(searchTaskDTO)
         }else{
@@ -25,6 +26,7 @@ export class TasksController {
     }
 
     @Post()
+    @UsePipes(ValidationPipe)
     createNewTask(@Body() createTaskDTO: CreateTaskDTO): Task{
 
         return this.taskService.createNewTask(createTaskDTO)
@@ -37,7 +39,7 @@ export class TasksController {
     }
 
     @Put("/:id/status")
-    updateStatusById(@Param("id")id : string, @Body('status') status: TaskStatus): Task{
+    updateStatusById(@Param("id")id : string, @Body('status', TaskValidationPipe) status: TaskStatus): Task{
         return this.taskService.updateTaskById(id, status)
     }
 }
