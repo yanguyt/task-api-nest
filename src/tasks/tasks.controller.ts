@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateTaskDTO } from './dto/create-task.dto';
+import { SearchTaskDTO } from './dto/search-task.dto';
+import { TaskValidationPipe } from './pipes/task-status-validation.pipe';
+import { TaskStatus } from './task-status.enum';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
@@ -16,6 +19,11 @@ export class TasksController {
     //     }
         
     // }
+
+    @Get()
+    getTasks(@Query() filter: SearchTaskDTO):Promise<Task[]>{
+        return this.taskService.getTasks(filter)
+    }
 
     @Get("/:id")
     async findTaskById(@Param("id", ParseIntPipe) id: number): Promise<Task>{
@@ -35,8 +43,8 @@ export class TasksController {
         return this.taskService.deleteTaskById(id)
     }
 
-    // @Put("/:id/status")
-    // updateStatusById(@Param("id")id : string, @Body('status', TaskValidationPipe) status: TaskStatus): Task{
-    //     return this.taskService.updateTaskById(id, status)
-    // }
+    @Put("/:id/status")
+    updateStatusById(@Param("id", ParseIntPipe) id : number, @Body('status', TaskValidationPipe) status: TaskStatus): Promise<Task>{
+        return this.taskService.updateTaskById(id, status)
+    }
 }

@@ -10,29 +10,9 @@ import { TaskRepository } from './task.repository';
 export class TasksService {
    constructor(private taskRepository: TaskRepository){}
 
-    // getAlltasks(): Task[]{
-    //     return this.tasks;
-    // }
-
-    // searchForTasks(searchTaskDTO: SearchTaskDTO): Task[]{
-    //     const {status, search} = searchTaskDTO
-
-    //     let tasks = this.getAlltasks()
-
-    //     if (status) {
-    //         tasks = tasks.filter(item => item.status == status)
-    //     }
-
-    //     if (search) {
-    //         tasks = tasks.filter(item => {
-    //             return item.title.includes(search) ||
-    //             item.description.includes(search);
-    //         })
-    //     }
-
-    //     return tasks
-
-    // }
+    async getTasks(filter: SearchTaskDTO): Promise<Task[]>{
+        return this.taskRepository.getTask(filter)
+    }
 
     async createTask(creatTaskDTO: CreateTaskDTO): Promise<Task>{
         const {title, description} = creatTaskDTO
@@ -65,6 +45,17 @@ export class TasksService {
         await this.taskRepository.deleteTaskById(id);
 
         return taskToRetrive
+    }
+
+
+    async updateTaskById(id: number, status: TaskStatus): Promise<Task>{
+        const task = await this.getTaskById(id)
+        task.status = status
+
+        await task.save()
+
+        return task
+
     }
 
     // updateTaskById(id: string, status: TaskStatus): Task{
