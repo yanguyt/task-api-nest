@@ -1,3 +1,4 @@
+import { User } from "src/auth/user.entity";
 import { EntityRepository, Repository } from "typeorm";
 import { SearchTaskDTO } from "./dto/search-task.dto";
 import { Task } from "./task.entity";
@@ -5,7 +6,7 @@ import { Task } from "./task.entity";
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task>{
 
-    async getTask(filter: SearchTaskDTO): Promise<Task[]>{
+    async getTask(filter: SearchTaskDTO, user:User): Promise<Task[]>{
         const {status, search} = filter
 
         const query = this.createQueryBuilder('task')

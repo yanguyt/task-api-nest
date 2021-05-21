@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { userInfo } from 'os';
 import { User } from 'src/auth/user.entity';
 import { GetUser } from 'src/decorators/get-user.decorator';
 import { CreateTaskDTO } from './dto/create-task.dto';
@@ -25,13 +26,13 @@ export class TasksController {
     // }
 
     @Get()
-    getTasks(@Query() filter: SearchTaskDTO):Promise<Task[]>{
-        return this.taskService.getTasks(filter)
+    getTasks(@Query() filter: SearchTaskDTO, @GetUser() user: User):Promise<Task[]>{
+        return this.taskService.getTasks(filter, user)
     }
 
     @Get("/:id")
-    async findTaskById(@Param("id", ParseIntPipe) id: number): Promise<Task>{
-        return this.taskService.getTaskById(id)
+    async findTaskById(@Param("id", ParseIntPipe) id: number, @GetUser() user: User): Promise<Task>{
+        return this.taskService.getTaskById(id, user)
     }
 
     @Post()
@@ -42,13 +43,13 @@ export class TasksController {
 
     }
 
-    @Delete("/:id")
-    deleteTaskById(@Param("id", ParseIntPipe) id: number): Promise<Task>{
-        return this.taskService.deleteTaskById(id)
-    }
+    // @Delete("/:id")
+    // deleteTaskById(@Param("id", ParseIntPipe) id: number): Promise<Task>{
+    //     return this.taskService.deleteTaskById(id)
+    // }
 
-    @Put("/:id/status")
-    updateStatusById(@Param("id", ParseIntPipe) id : number, @Body('status', TaskValidationPipe) status: TaskStatus): Promise<Task>{
-        return this.taskService.updateTaskById(id, status)
-    }
+    // @Put("/:id/status")
+    // updateStatusById(@Param("id", ParseIntPipe) id : number, @Body('status', TaskValidationPipe) status: TaskStatus): Promise<Task>{
+    //     return this.taskService.updateTaskById(id, status)
+    // }
 }
