@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { User } from 'src/auth/user.entity';
 import { v1 as uuid} from 'uuid';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { SearchTaskDTO } from './dto/search-task.dto';
@@ -14,7 +15,7 @@ export class TasksService {
         return this.taskRepository.getTask(filter)
     }
 
-    async createTask(creatTaskDTO: CreateTaskDTO): Promise<Task>{
+    async createTask(creatTaskDTO: CreateTaskDTO, user: User): Promise<Task>{
         const {title, description} = creatTaskDTO
 
         let task = new Task()
@@ -22,8 +23,10 @@ export class TasksService {
         task.title = title,
         task.description = description
         task.status = TaskStatus.OPEN
-
+        task.user = user
         await task.save()
+
+        delete task.user
 
         return task
     }
